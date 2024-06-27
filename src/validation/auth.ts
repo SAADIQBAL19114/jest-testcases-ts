@@ -1,13 +1,14 @@
-const { body, check, validationResult } = require('express-validator');
+import { Request, Response, NextFunction } from 'express';
+import { body, check, validationResult } from 'express-validator';
 
-const validatorFunction = (req, res, next) => {
+const validatorFunction = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   } else next();
 };
 
-module.exports.userPostData = [
+export const userPostData = [
   check('name').notEmpty().withMessage('Name is required'),
   body('name')
     .isLength({ min: 3 })
@@ -23,7 +24,7 @@ module.exports.userPostData = [
   validatorFunction,
 ];
 
-module.exports.userPutData = [
+export const userPutData = [
   check('name').notEmpty().withMessage('Name is required'),
   body('name')
     .isLength({ min: 3 })
@@ -39,7 +40,7 @@ module.exports.userPutData = [
   validatorFunction,
 ];
 
-module.exports.postPostData = [
+export const postPostData = [
   check('body').notEmpty().withMessage('Post can not be empty'),
   body('body').trim(),
   check('userUuid').notEmpty().withMessage('uuid can not be empty'),
@@ -47,7 +48,7 @@ module.exports.postPostData = [
   validatorFunction,
 ];
 
-module.exports.postPutData = [
+export const postPutData = [
   check('body').notEmpty().withMessage('Post can not be empty'),
   body('body').trim(),
   check('userId').notEmpty().withMessage('userId can not be empty'),

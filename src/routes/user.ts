@@ -1,8 +1,6 @@
-const express = require('express');
-const {userPostData, userPutData} = require('../validation/auth');
-const router = express.Router();
-
-const {
+import express from 'express';
+import { userPostData, userPutData } from '../validation/auth';
+import {
   handlePostUser,
   handleGetAllUser,
   handleDeleteUser,
@@ -10,18 +8,20 @@ const {
   handleGetOneUser,
   handleUserWithPost,
   handleUserWithPosts,
-} = require('../controllers/user');
+} from '../controllers/user';
+
+const router = express.Router();
 
 router.route('/').post(userPostData, handlePostUser).get(handleGetAllUser);
 
 router
   .route('/id/:uuid')
   .delete(handleDeleteUser)
-  .put(userPutData,handleEditUser)
+  .put(userPutData, handleEditUser)
   .get(handleGetOneUser);
 
 router.route('/id1/:uuid').get(handleUserWithPosts);
 
 router.route('/user-with-post').get(handleUserWithPost);
 
-module.exports = router;
+export default router;
