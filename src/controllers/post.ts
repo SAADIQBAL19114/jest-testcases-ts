@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
-const { user, post } = require('../models');
+import db from '../models';
+const { user, post } = db;
 
-export const handlePostPost = async (
+//------------Post Model Work(POST) POST A NEW POST IN THE DATABASE------------
+
+const handlePostPost = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
@@ -9,7 +12,7 @@ export const handlePostPost = async (
   try {
     const user1 = await user.findOne({ where: { uuid: userUuid } });
     if (!user1) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ message: 'User not found.' });
     }
     const post1 = await post.create({ body, userId: user1.id });
     return res.status(201).json(post1);
@@ -19,47 +22,57 @@ export const handlePostPost = async (
   }
 };
 
-export const handleGetPost = async (
+//------------Post Model Work(GET) GET ALL POSTS IN THE DATABASE------------
+
+const handleGetPost = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
   try {
-    const post1 = await post.findAll();
-    return res.status(200).json(post1);
+    const posts = await post.findAll();
+    return res.status(200).json(posts);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
   }
 };
 
-export const handleDeletePost = async (
+//------------Post Model Work(DELETE) DELETE A POST IN THE DATABASE------------
+
+const handleDeletePost = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const { uuid } = req.params;
+  const uuid = req.params.uuid;
   try {
     const post1 = await post.findOne({ where: { uuid } });
     if (!post1) {
-      return res.status(404).json({ error: 'Post not found' });
+      return res
+        .status(404)
+        .send({ message: "There isn't any post of this id exists." });
     }
     await post1.destroy();
-    return res.status(200).json({ message: 'Post successfully deleted' });
+    return res.status(200).json('Post successfully deleted');
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
   }
 };
 
-export const handleEditPost = async (
+//------------Post Model Work(EDIT) EDIT A POST IN THE DATABASE------------
+
+const handleEditPost = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const { uuid } = req.params;
+  const uuid = req.params.uuid;
   const { body, userId } = req.body;
   try {
     const post1 = await post.findOne({ where: { uuid } });
     if (!post1) {
-      return res.status(404).json({ error: 'Post not found' });
+      return res
+        .status(400)
+        .json({ message: "There isn't any post of this id exists." });
     }
     post1.body = body;
     post1.userId = userId;
@@ -71,16 +84,25 @@ export const handleEditPost = async (
   }
 };
 
-export const handlePostWithUser = async (
+//------------Post Model Work(GET) GET ALL POSTS WITH USERS IN THE DATABASE------------
+
+const handlePostWithUser = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
   try {
-    const post1 = await post.findAll({ include: ['user'] });
-    return res.status(200).json(post1);
+    const posts = await post.findAll({ include: ['user'] });
+    return res.status(200).json(posts);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
   }
 };
 
+export {
+  handlePostPost,
+  handlePostWithUser,
+  handleGetPost,
+  handleDeletePost,
+  handleEditPost,
+};
